@@ -1,4 +1,4 @@
-# Usage: python seperate-dataset.py "source_folder" "image_folder" "txt_folder"
+# Usage: python seperate_dataset.py "source_folder" "image_folder" "txt_folder"
 # Contributor: Büşra Yıldırım, Doğa Oytaç
 
 import os
