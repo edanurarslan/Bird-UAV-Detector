@@ -35,7 +35,7 @@ class DataAugmentation():
         pil_img = v2.ToPILImage()
         img = pil_img(flipped_img)
 
-        img.save(f"{step}_aug.jpg")
+        img.save(f"./new_images/{step}_aug.jpg")
 
     def crop_image(self, image, step):
 
@@ -52,7 +52,7 @@ class DataAugmentation():
 
             pil_img = v2.ToPILImage()
             img = pil_img(cropped_img.squeeze(0))
-            img.save(f"{step}_aug.jpg")
+            img.save(f"./new_images/{step}_aug.jpg")
 
     def gaussian_noise(self, image, step):
 
@@ -62,7 +62,7 @@ class DataAugmentation():
         ])
 
         img = transform(image)
-        img.save(f"{step}_aug.jpg")
+        img.save(f"./new_images/{step}_aug.jpg")
 
     def color_jitter(self, image, step):
 
@@ -72,7 +72,7 @@ class DataAugmentation():
         ])
 
         img = transform(image)
-        img.save(f"{step}_aug.jpg")
+        img.save(f"./new_images/{step}_aug.jpg")
 
     def prepare_dataset(self, dataset):
 
@@ -102,6 +102,8 @@ if __name__ == "__main__":
 
     augment = DataAugmentation()
     groups = augment.prepare_dataset(dataset)
+
+    os.makedirs("./new_images")
 
     transform = v2.Compose([
         v2.ToImage(),
