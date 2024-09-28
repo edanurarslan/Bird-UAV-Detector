@@ -12,18 +12,62 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', max_http_buffer_size=10 * 2000 * 1024)
 
-model = YOLO(r"E:\\birdanddrone\\MODEL EĞİTİM\\YOLO\runs\\detect\\train\\weights\\best.pt")
+
+file_path = r"best.pt"
+
+if os.path.exists(file_path):
+    print("File exists")
+    model = YOLO(file_path)
+else:
+    print(f"File not found: {file_path}")
+
 os.makedirs("upload", exist_ok=True)
+
+ZIP_PATH = 'static/images.zip'
+EXTRACT_PATH = 'static/'  
+
+if not os.path.exists('static/images'):
+    try:
+        with zipfile.ZipFile(ZIP_PATH, 'r') as zip_ref:
+            zip_ref.extractall(EXTRACT_PATH)  
+            print(f"{ZIP_PATH} başarıyla çıkarıldı.")
+    except zipfile.BadZipFile:
+        print(f"{ZIP_PATH} geçersiz bir ZIP dosyası.")
+    except Exception as e:
+        print(f"Bilinmeyen bir hata oluştu: {e}")
+else:
+    print("static/images zaten mevcut. İşlem yapılmadı.")
+
+def get_image_paths(folder_name):
+    folder_path = os.path.join('static', 'images', folder_name)  # static/images dizinini kontrol et
+    if os.path.exists(folder_path):
+        return [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(('jpg', 'jpeg', 'png'))]
+    else:
+        print(f"{folder_path} klasörü bulunamadı.")
+        return []
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return render_template('test.html')
+
 
 @app.route('/captcha')
 def captcha():
-    return render_template('captcha.html')
+    bird_images = get_image_paths('bird')
+    drone_images = get_image_paths('drone')
+    other_images = get_image_paths('other')
 
+    return render_template('captcha.html', bird_images=bird_images, drone_images=drone_images, other_images=other_images)
+
+
+@app.route('/components/<component_name>')
+def load_component(component_name):
+    return render_template(f'components/{component_name}.html')
 
 
 @app.route('/upload/predict/<filename>')
